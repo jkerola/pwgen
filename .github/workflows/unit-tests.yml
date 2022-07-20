@@ -2,15 +2,15 @@ name: Execute unit test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
     paths:
       - lib/
       - test/
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   # Allows manual trigger
   workflow_dispatch:
-  
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -25,7 +25,7 @@ jobs:
       - name: Analyze project source
         run: dart analyze
       - name: Run tests
-        run: dart test --file-reporter json:testreport.json
+        run: dart test --file-reporter json:report.json
       - name: Convert report to XML
         run: |
           dart pub global activate junitreport
