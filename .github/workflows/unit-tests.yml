@@ -1,0 +1,38 @@
+name: Execute unit test
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - lib/
+      - test/
+  pull_request:
+    branches: ["main"]
+  # Allows manual trigger
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dart-lang/setup-dart@v1
+      - name: Install dependencies
+        run: dart pub get
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed .
+      - name: Analyze project source
+        run: dart analyze
+      - name: Run tests
+        run: dart test --file-reporter json:report.json
+      - name: Convert report to XML
+        run: |
+          dart pub global activate junitreport
+          dart pub global run junitreport:tojunit --input report.json --output testreport.xml
+        if: always()
+      - name: Publish test results
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: "testreport.xml"
